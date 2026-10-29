@@ -64,3 +64,16 @@ GitHub Actions runs the same check on every push.
 ## Feedback
 
 Found a bug or have a question about a problem? Open an issue, or leave a comment on the video.
+
+## License
+
+This repository uses two licenses:
+
+| What | License | File |
+|---|---|---|
+| **Code:** all `.sql` files, `scripts/`, `.github/` | [MIT](LICENSE) | `LICENSE` |
+| **Lesson text and docs:** all `README.md` files, `docs/` | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) | `LICENSE-CC-BY-4.0.txt` |
+
+You're free to use the SQL in your own projects or classes, and to share or adapt the lesson text, with credit.
+
+**Attribution for the lesson text:** "SQL Like a College Course" by John Conklin, licensed under CC BY 4.0, https://github.com/JohnConklin/sql-like-a-college-course

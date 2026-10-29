@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2026 John Conklin
 # Rebuilds campus.db from scratch and runs every lesson solution.
 # Fails if any SQL statement errors.
 set -euo pipefail

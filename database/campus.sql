@@ -1,3 +1,5 @@
+-- SPDX-License-Identifier: MIT
+-- Copyright (c) 2026 John Conklin
 -- campus.sql : sample database for the "Learn it, then prove it" SQL series
 -- Load in SQLite:  sqlite3 campus.db < campus.sql
 -- (Or open DB Browser for SQLite > Execute SQL > paste > run)

@@ -173,3 +173,7 @@ Every lesson has a **trap problem** built on deliberate "dirty" data in the samp
 - **Callbacks:** Lessons 7–9 deliberately reuse traps from Lessons 3–4 (NULL, COUNT). Add a card to the earlier video each time. Watch time across the series compounds.
 - **Bonus comment problem:** End each lesson with one unsolved problem against `campus.db`. Answer it in the pinned comment a week later, or as a Short.
 - **Future series hooks:** Lesson 4 → window functions. Lesson 8 → RIGHT/FULL joins. Lesson 10 → Python + SQLite.
+
+---
+
+© 2026 John Conklin. Text licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). SQL code licensed under the [MIT License](../LICENSE).

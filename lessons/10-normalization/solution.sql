@@ -1,3 +1,5 @@
+-- SPDX-License-Identifier: MIT
+-- Copyright (c) 2026 John Conklin
 -- Lesson 10: Normalization (1NF to 3NF) - solutions
 -- Build the database first: sqlite3 campus.db < ../../database/campus.sql
 -- Then run: sqlite3 campus.db < solution.sql

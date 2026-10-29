@@ -1,3 +1,5 @@
+-- SPDX-License-Identifier: MIT
+-- Copyright (c) 2026 John Conklin
 -- Lesson 04: COUNT, SUM, AVG, MIN, MAX - solutions
 -- Build the database first: sqlite3 campus.db < ../../database/campus.sql
 -- Then run: sqlite3 campus.db < solution.sql

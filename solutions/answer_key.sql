@@ -1,3 +1,5 @@
+-- SPDX-License-Identifier: MIT
+-- Copyright (c) 2026 John Conklin
 -- answer_key.sql : tested solutions for every "Prove it" problem (SQLite)
 -- Run: sqlite3 campus.db < answer_key.sql
 

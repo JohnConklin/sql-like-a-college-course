@@ -16,3 +16,7 @@ Pause the video and try each problem before looking at the solution.
 ## Solution
 
 Try the problems before opening [`solution.sql`](solution.sql).
+
+---
+
+© 2026 John Conklin. Text licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). SQL code licensed under the [MIT License](../../LICENSE).
