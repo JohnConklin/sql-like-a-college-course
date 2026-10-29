@@ -1,0 +1,15 @@
+name: Verify SQL
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install SQLite
+        run: sudo apt-get update && sudo apt-get install -y sqlite3
+      - name: Build database and run all solutions
+        run: ./scripts/verify.sh

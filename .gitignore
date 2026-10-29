@@ -1,0 +1,11 @@
+# Generated databases (rebuild from database/campus.sql)
+*.db
+*.db-journal
+*.sqlite
+*.sqlite3
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
