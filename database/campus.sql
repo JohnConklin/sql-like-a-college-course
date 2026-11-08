@@ -1,128 +1,128 @@
 -- SPDX-License-Identifier: MIT
 -- Copyright (c) 2026 John Conklin
--- campus.sql : sample database for the "Learn it, then prove it" SQL series
--- Load in SQLite:  sqlite3 campus.db < campus.sql
--- (Or open DB Browser for SQLite > Execute SQL > paste > run)
--- Deliberate "trap" data is marked with  -- TRAP
+-- campus.sql
+-- The campus sample database used in every lesson and video in this series,
+-- and in the SQL Joins & GROUP BY Practice Pack.
+-- (c) 2026 John Conklin. Standard SQL; tested in SQLite 3.39+ and PostgreSQL 18.
+-- Load it in SQLite:   sqlite3 campus.db < campus.sql
+-- Or in Python:        sqlite3.connect("campus.db").executescript(open("campus.sql").read())
+-- Load it in PostgreSQL: createdb campus && psql -d campus -f campus.sql
 
-PRAGMA foreign_keys = ON;
+-- Optional, SQLite only: run  PRAGMA foreign_keys = ON;  first if you want
+-- SQLite to enforce the foreign keys. PostgreSQL always enforces them.
 
-DROP TABLE IF EXISTS enrollments;
-DROP TABLE IF EXISTS courses;
-DROP TABLE IF EXISTS students;
-DROP TABLE IF EXISTS instructors;
-DROP TABLE IF EXISTS departments;
-DROP TABLE IF EXISTS signup_sheet;
+DROP TABLE IF EXISTS Enrollment;
+DROP TABLE IF EXISTS Section;
+DROP TABLE IF EXISTS Student;
+DROP TABLE IF EXISTS Course;
+DROP TABLE IF EXISTS Instructor;
+DROP TABLE IF EXISTS Department;
 
-CREATE TABLE departments (
-    dept_id     INTEGER PRIMARY KEY,
-    dept_name   TEXT NOT NULL UNIQUE,
-    building    TEXT
+CREATE TABLE Department (
+    DeptID    CHAR(3)      PRIMARY KEY,
+    DeptName  VARCHAR(40)  NOT NULL UNIQUE
 );
 
-CREATE TABLE instructors (
-    instructor_id INTEGER PRIMARY KEY,
-    first_name    TEXT NOT NULL,
-    last_name     TEXT NOT NULL,
-    dept_id       INTEGER NOT NULL REFERENCES departments(dept_id),
-    hire_year     INTEGER
+CREATE TABLE Instructor (
+    InstructorID  CHAR(2)      PRIMARY KEY,
+    Name          VARCHAR(40)  NOT NULL,
+    DeptID        CHAR(3)      NOT NULL REFERENCES Department(DeptID),
+    MentorID      CHAR(2)      NULL REFERENCES Instructor(InstructorID)
 );
 
-CREATE TABLE courses (
-    course_id     TEXT PRIMARY KEY,          -- e.g. 'CS101'
-    title         TEXT NOT NULL,
-    dept_id       INTEGER NOT NULL REFERENCES departments(dept_id),
-    credits       INTEGER NOT NULL CHECK (credits BETWEEN 1 AND 5),
-    instructor_id INTEGER REFERENCES instructors(instructor_id)  -- nullable: TBA
+CREATE TABLE Course (
+    CourseID  CHAR(5)      PRIMARY KEY,
+    Title     VARCHAR(40)  NOT NULL,
+    Credits   INTEGER      NOT NULL CHECK (Credits BETWEEN 1 AND 6),
+    DeptID    CHAR(3)      NOT NULL REFERENCES Department(DeptID)
 );
 
-CREATE TABLE students (
-    student_id  INTEGER PRIMARY KEY,
-    first_name  TEXT NOT NULL,
-    last_name   TEXT NOT NULL,
-    major       TEXT,                        -- nullable: undeclared
-    gpa         REAL,                        -- nullable: first-term / transfer
-    enroll_year INTEGER NOT NULL,
-    email       TEXT UNIQUE                  -- nullable
+CREATE TABLE Section (
+    SectionID     CHAR(2)      PRIMARY KEY,
+    CourseID      CHAR(5)      NOT NULL REFERENCES Course(CourseID),
+    Term          VARCHAR(12)  NOT NULL,
+    InstructorID  CHAR(2)      NULL REFERENCES Instructor(InstructorID)  -- NULL = instructor TBA
 );
 
-CREATE TABLE enrollments (
-    student_id  INTEGER NOT NULL REFERENCES students(student_id),
-    course_id   TEXT    NOT NULL REFERENCES courses(course_id),
-    term        TEXT    NOT NULL,            -- '2026FA', '2026SP'
-    grade       TEXT,                        -- nullable: in progress
-    PRIMARY KEY (student_id, course_id, term)
+CREATE TABLE Student (
+    StudentID  INTEGER      PRIMARY KEY,
+    Name       VARCHAR(40)  NOT NULL,
+    Major      VARCHAR(40)  NOT NULL
 );
 
-INSERT INTO departments VALUES
- (1, 'Computer Science', 'Turing Hall'),
- (2, 'Information Systems', 'Codd Center'),
- (3, 'Mathematics', 'Euler Hall'),
- (4, 'Business', NULL);                                   -- TRAP: NULL building
-
-INSERT INTO instructors VALUES
- (1, 'Grace',  'Hopper',   1, 2012),
- (2, 'Edgar',  'Codd',     2, 2015),
- (3, 'Ada',    'Lovelace', 1, 2019),
- (4, 'Alan',   'Turing',   3, 2010),
- (5, 'Peter',  'Chen',     2, 2021),
- (6, 'Katherine','Johnson',3, 2023);                      -- TRAP: teaches nothing
-
-INSERT INTO courses VALUES
- ('CS101',  'Intro to Programming',     1, 3, 1),
- ('CS201',  'Data Structures',          1, 4, 3),
- ('IS210',  'Database Design',          2, 3, 2),
- ('IS310',  'Advanced SQL',             2, 3, 2),
- ('IS320',  'Data Modeling',            2, 3, 5),
- ('MATH150','Discrete Math',            3, 4, 4),
- ('MATH250','Statistics',               3, 3, 4),
- ('BUS100', 'Intro to Business',        4, 3, NULL),      -- TRAP: no instructor
- ('CS350',  'Web Databases',            1, 3, 3),
- ('IS400',  'Data Warehousing',         2, 4, 5);         -- TRAP: no enrollments
-
-INSERT INTO students VALUES
- (1,  'Maria',   'Lopez',    'Information Systems', 3.62, 2024, 'mlopez@campus.edu'),
- (2,  'James',   'Carter',   'Computer Science',    2.95, 2023, 'jcarter@campus.edu'),
- (3,  'Ann',     'Nguyen',   'Computer Science',    3.88, 2025, 'anguyen@campus.edu'),
- (4,  'Anna',    'Smith',    'Mathematics',         3.10, 2024, 'asmith@campus.edu'),   -- TRAP: LIKE 'Ann%'
- (5,  'Devon',   'Brooks',   'Information Systems', 2.40, 2022, NULL),                  -- TRAP: NULL email
- (6,  'Priya',   'Patel',    'Computer Science',    3.71, 2023, 'ppatel@campus.edu'),
- (7,  'Luis',    'Garcia',   NULL,                  3.05, 2025, 'lgarcia@campus.edu'),  -- TRAP: undeclared
- (8,  'Hannah',  'Kim',      'Business',            3.45, 2024, 'hkim@campus.edu'),
- (9,  'Omar',    'Haddad',   'Information Systems', NULL, 2026, 'ohaddad@campus.edu'),  -- TRAP: NULL gpa
- (10, 'Chloe',   'Martin',   'Mathematics',         3.95, 2022, 'cmartin@campus.edu'),
- (11, 'Ethan',   'Wright',   'Computer Science',    2.10, 2023, 'ewright@campus.edu'),
- (12, 'Sofia',   'Rossi',    'Business',            3.00, 2025, NULL),                  -- TRAP: NULL email
- (13, 'Noah',    'Bennett',  'Information Systems', 3.30, 2024, 'nbennett@campus.edu'),
- (14, 'Zoe',     'Adams',    NULL,                  NULL, 2026, 'zadams@campus.edu'),   -- TRAP: no enrollments
- (15, 'Marcus',  'Lee',      'Computer Science',    3.50, 2024, 'mlee@campus.edu');
-
-INSERT INTO enrollments VALUES
- (1,'IS210','2026SP','A'),  (1,'IS310','2026FA',NULL), (1,'MATH250','2026SP','B'),
- (2,'CS101','2026SP','C'),  (2,'CS201','2026FA',NULL), (2,'IS210','2026SP','B'),
- (3,'CS101','2026SP','A'),  (3,'CS201','2026FA',NULL), (3,'MATH150','2026SP','A'),
- (4,'MATH150','2026SP','B'),(4,'MATH250','2026FA',NULL),
- (5,'IS210','2026SP','D'),  (5,'IS210','2026FA',NULL),                                 -- TRAP: retake
- (6,'CS101','2026SP','A'),  (6,'CS201','2026FA',NULL), (6,'CS350','2026FA',NULL), (6,'IS210','2026SP','A'),
- (7,'CS101','2026FA',NULL), (7,'BUS100','2026FA',NULL),
- (8,'BUS100','2026SP','B'), (8,'IS210','2026FA',NULL),
- (9,'IS210','2026FA',NULL), (9,'CS101','2026FA',NULL),
- (10,'MATH150','2026SP','A'),(10,'MATH250','2026SP','A'),(10,'CS201','2026FA',NULL),
- (11,'CS101','2026SP','F'), (11,'CS101','2026FA',NULL),                                -- TRAP: retake
- (12,'BUS100','2026SP','C'),(12,'MATH250','2026FA',NULL),
- (13,'IS210','2026SP','B'), (13,'IS310','2026FA',NULL), (13,'IS320','2026FA',NULL),
- (15,'CS101','2026SP','B'), (15,'CS350','2026FA',NULL), (15,'IS210','2026SP','A');
-
--- Lesson 10 (normalization): a deliberately BAD, unnormalized table
-CREATE TABLE signup_sheet (
-    student_name   TEXT,
-    student_email  TEXT,
-    major          TEXT,
-    courses        TEXT,   -- comma-separated list  -> violates 1NF
-    instructor     TEXT,   -- depends on the course, not the student
-    dept_building  TEXT    -- depends on the department -> transitive dependency
+CREATE TABLE Enrollment (
+    StudentID    INTEGER       NOT NULL REFERENCES Student(StudentID),
+    SectionID    CHAR(2)       NOT NULL REFERENCES Section(SectionID),
+    Grade        CHAR(1)       NULL,   -- NULL = term still in progress
+    GradePoints  DECIMAL(2,1)  NULL,
+    PRIMARY KEY (StudentID, SectionID)
 );
-INSERT INTO signup_sheet VALUES
- ('Maria Lopez',  'mlopez@campus.edu',  'Information Systems', 'IS210, IS310', 'Codd', 'Codd Center'),
- ('James Carter', 'jcarter@campus.edu', 'Computer Science',    'CS101, CS201, IS210', 'Hopper, Lovelace, Codd', 'Turing Hall'),
- ('Maria Lopez',  'maria.l@campus.edu', 'Info Systems',        'MATH250', 'Turing', 'Euler Hall');  -- update anomaly
+
+INSERT INTO Department VALUES
+    ('D10', 'Computer Science'),
+    ('D20', 'Information Systems'),
+    ('D30', 'Mathematics'),
+    ('D40', 'Data Science');           -- no courses yet
+
+INSERT INTO Instructor VALUES
+    ('I1', 'Dr. Shah',   'D10', NULL), -- no mentor
+    ('I2', 'Dr. Kim',    'D10', 'I1'),
+    ('I3', 'Dr. Ortiz',  'D20', 'I1'),
+    ('I4', 'Dr. Brooks', 'D30', NULL), -- no mentor
+    ('I5', 'Dr. Chen',   'D20', 'I3'); -- teaches no sections
+
+INSERT INTO Course VALUES
+    ('CS101', 'Intro to Programming', 3, 'D10'),
+    ('CS250', 'Database Systems',     3, 'D10'),
+    ('CS310', 'Data Structures',      4, 'D10'),
+    ('IS200', 'Web Development',      3, 'D20'),
+    ('IS340', 'Data Analytics',       3, 'D20'),
+    ('MA210', 'Discrete Math',        4, 'D30'); -- never offered
+
+INSERT INTO Section VALUES
+    ('S1', 'CS101', 'Fall 2026',   'I1'),
+    ('S2', 'CS101', 'Fall 2026',   'I2'),  -- second section of the same course
+    ('S3', 'CS250', 'Spring 2026', 'I1'),
+    ('S4', 'CS250', 'Fall 2026',   'I2'),
+    ('S5', 'CS310', 'Fall 2026',   NULL),  -- instructor TBA
+    ('S6', 'IS200', 'Spring 2026', 'I3'),
+    ('S7', 'IS340', 'Fall 2026',   'I3'),
+    ('S8', 'IS200', 'Fall 2026',   'I3');
+
+INSERT INTO Student VALUES
+    (10021, 'Ana Garcia',    'Information Systems'),
+    (10022, 'Jordan Lee',    'Computer Science'),
+    (10023, 'Jordan Lee',    'Data Analytics'),   -- same name, different student
+    (10024, 'Maya Patel',    'Computer Science'),
+    (10025, 'Tran Nguyen',   'Information Systems'),
+    (10026, 'Sam Whitfield', 'Computer Science'),
+    (10027, 'Priya Nair',    'Mathematics'),
+    (10028, 'Leo Martinez',  'Information Systems'),
+    (10029, 'Grace Okafor',  'Computer Science'),
+    (10030, 'Ben Ortiz',     'Data Analytics');   -- no enrollments
+
+-- Spring 2026 is graded. Fall 2026 is in progress, so Grade is NULL.
+INSERT INTO Enrollment VALUES
+    (10021, 'S3', 'A', 4.0),
+    (10022, 'S3', 'B', 3.0),
+    (10024, 'S3', 'A', 4.0),
+    (10026, 'S3', 'C', 2.0),
+    (10021, 'S6', 'B', 3.0),
+    (10023, 'S6', 'A', 4.0),
+    (10025, 'S6', 'A', 4.0),
+    (10028, 'S6', 'B', 3.0),
+    (10023, 'S1', NULL, NULL),
+    (10026, 'S1', NULL, NULL),
+    (10029, 'S1', NULL, NULL),
+    (10022, 'S2', NULL, NULL),
+    (10027, 'S2', NULL, NULL),
+    (10024, 'S4', NULL, NULL),
+    (10025, 'S4', NULL, NULL),
+    (10029, 'S4', NULL, NULL),
+    (10022, 'S5', NULL, NULL),
+    (10024, 'S5', NULL, NULL),
+    (10021, 'S7', NULL, NULL),
+    (10023, 'S7', NULL, NULL),
+    (10028, 'S7', NULL, NULL),
+    (10027, 'S8', NULL, NULL),
+    (10029, 'S8', NULL, NULL);
