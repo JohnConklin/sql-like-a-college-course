@@ -11,5 +11,5 @@ jobs:
       - uses: actions/checkout@v4
       - name: Install SQLite
         run: sudo apt-get update && sudo apt-get install -y sqlite3
-      - name: Build database and run all solutions
+      - name: Run every solution and check the expected results
         run: ./scripts/verify.sh
